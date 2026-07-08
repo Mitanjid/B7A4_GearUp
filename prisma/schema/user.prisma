@@ -1,0 +1,29 @@
+enum Role {
+  CUSTOMER
+  PROVIDER
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+model User {
+  id        String     @id @default(uuid())
+  name      String
+  email     String     @unique
+  password  String
+  role      Role       @default(CUSTOMER)
+  status    UserStatus @default(ACTIVE)
+  phone     String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  // Relations
+  gearItems    GearItem[]    @relation("ProviderGear")
+  rentalOrders RentalOrder[] @relation("CustomerRentals")
+  reviews      Review[]      @relation("CustomerReviews")
+
+  @@map("users")
+}
