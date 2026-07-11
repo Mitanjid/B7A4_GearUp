@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import { Prisma } from "../../generated/prisma/client";
 
+import { ZodError } from "zod";
+import { Prisma } from "../../generated/prisma/client";
 
 export const globalErrorHandler = (
   err: any,
@@ -12,7 +13,14 @@ export const globalErrorHandler = (
   let message = err.message || "Something went wrong!";
   let errorDetails: any = err.stack;
 
-  if (err instanceof Prisma.PrismaClientValidationError) {
+  if (err instanceof ZodError) {
+    statusCode = 400;
+    message = "Validation failed";
+    errorDetails = err.issues.map((issue) => ({
+      field: issue.path.join("."),
+      message: issue.message,
+    }));
+  } else if (err instanceof Prisma.PrismaClientValidationError) {
     statusCode = 400;
     message = "Invalid data provided or missing required fields";
   } else if (err instanceof Prisma.PrismaClientKnownRequestError) {
@@ -26,17 +34,35 @@ export const globalErrorHandler = (
       statusCode = 404;
       message = "Record not found";
     }
+  } else if (err.message?.includes("logged in")) {
+    statusCode = 401;
   } else if (
-    err.message?.includes("logged in") ||
-    err.message?.includes("Forbidden")
+    err.message?.includes("Forbidden") ||
+    err.message?.includes("not allowed")
   ) {
-    statusCode = err.message.includes("Forbidden") ? 403 : 401;
+    statusCode = 403;
+  } else if (err.message?.includes("not found")) {
+    statusCode = 404;
+  } else if (
+    err.message?.includes("already exists") ||
+    err.message?.includes("Incorrect password") ||
+    err.message?.includes("suspended")
+  ) {
+    statusCode = 400;
   }
 
+  
   res.status(statusCode).json({
     success: false,
     message,
     errorDetails:
-      process.env.NODE_ENV === "production" ? undefined : errorDetails,
+      err instanceof ZodError
+        ? err.issues.map((issue) => ({
+            field: issue.path.join("."),
+            message: issue.message,
+          }))
+        : process.env.NODE_ENV === "production"
+          ? undefined
+          : err.message,
   });
 };
