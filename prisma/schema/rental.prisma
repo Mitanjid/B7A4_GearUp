@@ -1,11 +1,3 @@
-enum RentalStatus {
-  PLACED
-  CONFIRMED
-  PAID
-  PICKED_UP
-  RETURNED
-  CANCELLED
-}
 
 model RentalOrder {
   id          String       @id @default(uuid())
