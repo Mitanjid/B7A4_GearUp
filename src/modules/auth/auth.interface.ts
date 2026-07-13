@@ -6,7 +6,7 @@ export interface IRegisterUser {
   email: string;
   password: string;
   phone?: string;
-  role: Role; // CUSTOMER or PROVIDER only
+  role: Role;
 }
 
 export interface ILoginUser {
