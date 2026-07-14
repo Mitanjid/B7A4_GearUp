@@ -16,9 +16,11 @@ declare global {
 
 export const auth = (...requiredRoles: Role[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.headers.authorization?.startsWith("Bearer ")
-      ? req.headers.authorization.split(" ")[1]
-      : req.headers.authorization;
+    const token =
+      req.cookies?.accessToken || // 👈 আগে cookie চেক করবে
+      (req.headers.authorization?.startsWith("Bearer ")
+        ? req.headers.authorization.split(" ")[1]
+        : req.headers.authorization);
 
     if (!token) {
       throw new Error(
@@ -26,7 +28,7 @@ export const auth = (...requiredRoles: Role[]) => {
       );
     }
 
-    const verified = jwtUtils.verifyToken(token, config.jwt_access_secret!);
+    const verified = jwtUtils.verifyToken(token, config.jwt_access_secret);
 
     if (!verified.success) {
       throw new Error(verified.error);

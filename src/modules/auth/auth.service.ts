@@ -52,13 +52,18 @@ const loginUser = async (payload: ILoginUser) => {
 
   const accessToken = jwtUtils.createToken(
     jwtPayload,
-    config.jwt_access_secret!,
-    config.jwt_access_expires_in!,
+    config.jwt_access_secret,
+    config.jwt_access_expires_in,
   );
+  const refreshToken = jwtUtils.createToken(
+    jwtPayload,
+    config.jwt_refresh_secret,
+    config.jwt_refresh_expires_in,
+  ); // 👈 নতুন
 
   const { password, ...userWithoutPassword } = user;
 
-  return { accessToken, user: userWithoutPassword };
+  return { accessToken, refreshToken, user: userWithoutPassword }; 
 };
 
 const getMe = async (userId: string) => {

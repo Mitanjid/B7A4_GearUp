@@ -10,6 +10,7 @@ export default {
   bcrypt_salt_rounds: process.env.BCRYPT_SALT_ROUNDS,
   jwt_access_secret: process.env.JWT_ACCESS_SECRET as string,
   jwt_access_expires_in: process.env.JWT_ACCESS_EXPIRES_IN || "7d",
+  jwt_refresh_secret: process.env.JWT_REFRESH_SECRET as string,
   jwt_refresh_expires_in: process.env.JWT_REFRESH_EXPIRES_IN || "30d",
 };
   

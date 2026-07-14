@@ -18,14 +18,27 @@ const registerUser = catchAsync(async (req: Request, res: Response) => {
 const loginUser = catchAsync(async (req: Request, res: Response) => {
   const result = await authService.loginUser(req.body);
 
+  res.cookie("accessToken", result.accessToken, {
+    httpOnly: true,
+    secure: false, 
+    sameSite: "none",
+    maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+  });
+
+  res.cookie("refreshToken", result.refreshToken, {
+    httpOnly: true,
+    secure: false,
+    sameSite: "none",
+    maxAge: 1000 * 60 * 60 * 24 * 7,
+  });
+
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
     message: "User logged in successfully",
-    data: result,
+    data: result, 
   });
 });
-
 const getMe = catchAsync(async (req: Request, res: Response) => {
   const user = await authService.getMe(req.user!.id);
 
