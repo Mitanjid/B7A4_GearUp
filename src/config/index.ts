@@ -13,5 +13,7 @@ export default {
   jwt_refresh_secret: process.env.JWT_REFRESH_SECRET as string,
   jwt_refresh_expires_in: process.env.JWT_REFRESH_EXPIRES_IN || "30d",
   stripe_secret_key: process.env.STRIPE_SECRET_KEY as string,
+  client_cancel_url: process.env.CLIENT_CANCEL_URL as string,
+  client_success_url: process.env.CLIENT_SUCCESS_URL as string,
 };
   

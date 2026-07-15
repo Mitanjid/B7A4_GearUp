@@ -16,16 +16,17 @@ import { adminRoutes } from "./modules/admin/admin.route";
 const app: Application = express();
 app.use(
   cors({
-    origin: config.app_url,
-    credentials: true,
+    origin: "*",
+    credentials: false,   
   }),
+
 );
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.get("/", (req: express.Request, res: express.Response) => {
-  res.send("Hello, World!");
+  res.send("Server is running");
 });
 
 app.use("/api/auth", authRoutes);
